@@ -55,7 +55,7 @@ class LoginPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                print('Botão cliccccccccccado');
+                print('Botão clicado');
               },
               child: const Text('Entrar'),
             )
