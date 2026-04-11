@@ -53,7 +53,7 @@ class LoginPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                print('Botão clicado');
+                print('Validar e-mail e senha com o banco de dados');
               },
               child: const Text('Entrar'),
             ),
@@ -61,8 +61,7 @@ class LoginPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CadastroPage()
-                  ),
+                  MaterialPageRoute(builder: (context) => const CadastroPage()),
                 );
               },
               child: const Text("Cadastrar-se"),
@@ -75,18 +74,53 @@ class LoginPage extends StatelessWidget {
 }
 
 class CadastroPage extends StatefulWidget {
-  const CadastroPage ({super.key});
+  const CadastroPage({super.key});
   @override
   State<CadastroPage> createState() => _CadastroPageState();
- }
+}
 
- class _CadastroPageState extends State<CadastroPage> {
-  @override 
+class _CadastroPageState extends State<CadastroPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Cadastro")),
-      body: const Center(child: Text("Tela de Cadastro"),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const TextField(
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Senha',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Confirmar Senha',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                print('Enviar dados ao banco');
+              },
+              child: const Text('Criar Conta'),
+            ),
+          ],
+        ),
       ),
     );
   }
- }
+}
