@@ -30,9 +30,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -58,10 +56,37 @@ class LoginPage extends StatelessWidget {
                 print('Botão clicado');
               },
               child: const Text('Entrar'),
-            )
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CadastroPage()
+                  ),
+                );
+              },
+              child: const Text("Cadastrar-se"),
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+class CadastroPage extends StatefulWidget {
+  const CadastroPage ({super.key});
+  @override
+  State<CadastroPage> createState() => _CadastroPageState();
+ }
+
+ class _CadastroPageState extends State<CadastroPage> {
+  @override 
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Cadastro")),
+      body: const Center(child: Text("Tela de Cadastro"),
+      ),
+    );
+  }
+ }
