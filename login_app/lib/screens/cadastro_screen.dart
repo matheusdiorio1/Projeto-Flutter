@@ -25,6 +25,7 @@ class CadastroScreen extends StatefulWidget {
 }
 
 class _CadastroPageState extends State<CadastroScreen> {
+  String mensagemErro = "";
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
@@ -39,6 +40,15 @@ class _CadastroPageState extends State<CadastroScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              mensagemErro,
+              style: TextStyle(
+                color: mensagemErro.contains("válido")
+                    ? Colors.green
+                    : Colors.red,
+                fontSize: 16,
+              ),
+            ),
             TextField(
               controller: nomeController,
               decoration: InputDecoration(
@@ -75,9 +85,9 @@ class _CadastroPageState extends State<CadastroScreen> {
             ElevatedButton(
               onPressed: () async {
                 if (senhaController.text != senhaConfirmaController.text) {
-                  print("Maior de idade");
+                  mensagemErro = 'Senhas não coincidem';
                 } else {
-                  print("Menor de idade");
+                  String SenhaCheck = 'Ok';
                 }
                 await FirebaseFirestore.instance.collection('clientes').add({
                   'nome': nomeController.text,

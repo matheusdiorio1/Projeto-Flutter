@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_app/screens/cadastro_screen.dart';
+import 'package:login_app/screens/pagamento_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -84,7 +85,9 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                print('Validar e-mail e senha com o banco de dados');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PagamentosScreen()));
               },
               child: const Text('Entrar', style: const TextStyle(color: Color.fromARGB(255, 255, 0, 0))),
                             style: ButtonStyle(
