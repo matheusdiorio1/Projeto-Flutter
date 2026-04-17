@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  const Pagamentosscrenn({super.key});
+  const Pagamentoscrenn({super.key});
 
   @override
   Widget build(BuildContext context) {
