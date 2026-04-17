@@ -74,7 +74,11 @@ class _CadastroPageState extends State<CadastroScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                
+                if (senhaController.text != senhaConfirmaController.text) {
+                  print("Maior de idade");
+                } else {
+                  print("Menor de idade");
+                }
                 await FirebaseFirestore.instance.collection('clientes').add({
                   'nome': nomeController.text,
                   'email': emailController.text,
