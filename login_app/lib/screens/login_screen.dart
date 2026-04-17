@@ -87,7 +87,7 @@ class LoginScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const PagamentosScreen()));
+                  MaterialPageRoute(builder: (context) => const PagamentoScreen()));
               },
               child: const Text('Entrar', style: const TextStyle(color: Color.fromARGB(255, 255, 0, 0))),
                             style: ButtonStyle(
