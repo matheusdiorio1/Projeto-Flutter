@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_app/screens/login_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class CadastroScreen extends StatefulWidget {
   const CadastroScreen({super.key});
   @override
@@ -25,6 +25,7 @@ class CadastroScreen extends StatefulWidget {
 }
 
 class _CadastroPageState extends State<CadastroScreen> {
+  final TextEditingController nomeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
 
@@ -37,6 +38,14 @@ class _CadastroPageState extends State<CadastroScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            TextField(
+              controller: nomeController,
+              decoration: InputDecoration(
+                labelText: 'Nome',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: emailController,
               decoration: InputDecoration(
@@ -63,11 +72,14 @@ class _CadastroPageState extends State<CadastroScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                String email = emailController.text;
-                String senha = senhaController.text;
-                print(email);
-                print(senha);
+              onPressed: () async {
+                await FirebaseFirestore.instance.collection('clientes').add({
+                  'nome': nomeController.text,
+                  'email': emailController.text,
+                  'senha_hash': senhaController.text,
+                });
+
+                print("Inserido com sucesso!");
               },
               child: const Text('Criar Conta'),
             ),
