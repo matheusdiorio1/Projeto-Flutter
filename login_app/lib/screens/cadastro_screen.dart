@@ -28,6 +28,7 @@ class _CadastroPageState extends State<CadastroScreen> {
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
+  final TextEditingController senhaConfirmaController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -73,12 +74,12 @@ class _CadastroPageState extends State<CadastroScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
+                
                 await FirebaseFirestore.instance.collection('clientes').add({
                   'nome': nomeController.text,
                   'email': emailController.text,
                   'senha_hash': senhaController.text,
                 });
-
                 print("Inserido com sucesso!");
               },
               child: const Text('Criar Conta'),

@@ -4,6 +4,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:login_app/screens/login_screen.dart';
 import 'package:login_app/screens/cadastro_screen.dart';
 import 'package:login_app/screens/home_screen.dart';
+import 'package:login_app/screens/pagamento_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
