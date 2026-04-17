@@ -13,13 +13,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      PagamentoScreen: const HomeScreen(),
+      home: const PagamentosScreen(),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const PagamentoScreen({super.key});
+class PagamentosScreen extends StatelessWidget {
+  const PagamentosScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
