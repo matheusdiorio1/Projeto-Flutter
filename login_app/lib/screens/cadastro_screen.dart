@@ -25,21 +25,49 @@ class CadastroScreen extends StatefulWidget {
   State<CadastroScreen> createState() => _CadastroPageState();
 }
 
+enum EstadoCampo { neutro, valido, invalido }
+
 class _CadastroPageState extends State<CadastroScreen> {
-  Color corNome = Colors.grey;
   String mensagemErro = "";
+
+  EstadoCampo nomeEstado = EstadoCampo.neutro;
+  EstadoCampo emailEstado = EstadoCampo.neutro;
+  EstadoCampo senhaEstado = EstadoCampo.neutro;
+  EstadoCampo telefoneEstado = EstadoCampo.neutro;
+  EstadoCampo dataEstado = EstadoCampo.neutro;
+  EstadoCampo confirmaSenhaEstado = EstadoCampo.neutro;
+
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController telefoneController = TextEditingController();
-  final TextEditingController dataNascimentoController = TextEditingController();
+  final TextEditingController dataNascimentoController =
+      TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController senhaConfirmaController = TextEditingController();
+
+  Color corDoCampo(EstadoCampo estado) {
+    switch (estado) {
+      case EstadoCampo.valido:
+        return Colors.green;
+      case EstadoCampo.invalido:
+        return Colors.red;
+      case EstadoCampo.neutro:
+      default:
+        return Colors.grey;
+    }
+  }
 
   bool nomeValido(String nome) {
     final regex = RegExp(r'^[A-Za-zÀ-ÿ ]+$');
 
     return nome.trim().length >= 3 && regex.hasMatch(nome);
   }
+
+  bool telefoneValido(String telefone) {
+  final apenasNumeros = telefone.replaceAll(RegExp(r'[^0-9]'), '');
+
+  return apenasNumeros.length == 10 || apenasNumeros.length == 11;
+}
 
   bool emailValido(String email) {
     final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -48,6 +76,71 @@ class _CadastroPageState extends State<CadastroScreen> {
     if (email.length < 6) return false;
 
     return true;
+  }
+
+  void validarNome() {
+    setState(() {
+      if (nomeValido(nomeController.text)) {
+        nomeEstado = EstadoCampo.valido;
+      } else {
+        nomeEstado = EstadoCampo.invalido;
+      }
+    });
+  }
+
+  void validarData(DateTime data) {
+    setState(() {
+      final hoje = DateTime.now();
+
+      // não pode ser no futuro
+      if (data.isAfter(hoje)) {
+        dataEstado = EstadoCampo.invalido;
+        return;
+      }
+
+      // se chegou aqui, é válida
+      dataEstado = EstadoCampo.valido;
+    });
+  }
+
+   void validarTelefone() {
+    setState(() {
+      if (telefoneValido(telefoneController.text)) {
+        telefoneEstado = EstadoCampo.valido;
+      } else {
+        telefoneEstado = EstadoCampo.invalido;
+      }
+    });
+  }
+
+  void validarEmail() {
+    setState(() {
+      if (emailValido(emailController.text)) {
+        emailEstado = EstadoCampo.valido;
+      } else {
+        emailEstado = EstadoCampo.invalido;
+      }
+    });
+  }
+
+  void validarSenha() {
+    setState(() {
+      if (senhaController.text.length >= 8) {
+        senhaEstado = EstadoCampo.valido;
+      } else {
+        senhaEstado = EstadoCampo.invalido;
+      }
+    });
+  }
+
+  void validarConfirmaSenha() {
+    setState(() {
+      if (senhaController.text == senhaConfirmaController.text) {
+        confirmaSenhaEstado = EstadoCampo.valido;
+      } else {
+        confirmaSenhaEstado = EstadoCampo.invalido;
+      }
+    });
   }
 
   @override
@@ -59,21 +152,19 @@ class _CadastroPageState extends State<CadastroScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              mensagemErro,
-              style: TextStyle(
-                color: mensagemErro.contains("válido")
-                    ? Colors.green
-                    : Colors.red,
-                fontSize: 16,
-              ),
-            ),
             TextField(
               controller: nomeController,
+              onChanged: (_) => validarNome(),
               decoration: InputDecoration(
                 labelText: 'Nome Completo',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: corNome),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: corDoCampo(nomeEstado)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: corDoCampo(nomeEstado),
+                    width: 2,
+                  ),
                 ),
               ),
             ),
@@ -81,45 +172,114 @@ class _CadastroPageState extends State<CadastroScreen> {
 
             TextField(
               controller: dataNascimentoController,
+              readOnly: true,
+              onTap: () async {
+                DateTime? data = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime(2000),
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime.now(),
+                );
+
+                if (data == null) {
+                  setState(() {
+                    dataEstado = EstadoCampo.invalido;
+                    dataNascimentoController.clear();
+                  });
+                  return;
+                }
+                setState(() {
+                  dataNascimentoController.text =
+                      "${data.day}/${data.month}/${data.year}";
+                });
+
+                validarData(data);
+              },
               decoration: InputDecoration(
                 labelText: 'Data de Nascimento',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: corDoCampo(dataEstado)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: corDoCampo(dataEstado),
+                    width: 2,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 20),
 
             TextField(
               controller: telefoneController,
+              onChanged: (_) => validarTelefone(),
               decoration: InputDecoration(
                 labelText: 'Telefone (DDD e Número)',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: corDoCampo(telefoneEstado)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: corDoCampo(telefoneEstado),
+                    width: 2,
+                  ),
+                ),
               ),
             ),
 
             const SizedBox(height: 20),
             TextField(
               controller: emailController,
+              onChanged: (_) => validarEmail(),
               decoration: InputDecoration(
                 labelText: 'Email',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: corDoCampo(emailEstado)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: corDoCampo(emailEstado),
+                    width: 2,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             TextField(
               obscureText: true,
               controller: senhaController,
+              onChanged: (_) => validarSenha(),
               decoration: InputDecoration(
                 labelText: 'Senha',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: corDoCampo(senhaEstado)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: corDoCampo(senhaEstado),
+                    width: 2,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             TextField(
               obscureText: true,
               controller: senhaConfirmaController,
+              onChanged: (_) => validarConfirmaSenha(),
               decoration: InputDecoration(
                 labelText: 'Confirmar Senha',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: corDoCampo(confirmaSenhaEstado),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: corDoCampo(confirmaSenhaEstado),
+                    width: 2,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -127,22 +287,18 @@ class _CadastroPageState extends State<CadastroScreen> {
               onPressed: () async {
                 mensagemErro = '';
                 print('Clicou no botão');
-                
+                validarNome();
                 if (senhaController.text != senhaConfirmaController.text) {
                   setState(() {
                     mensagemErro = 'Senhas não coincidem';
                   });
                 } else if (senhaController.text.length < 8) {
                   setState(() {
-                  mensagemErro = 'Senha inválida, menos de 8 carácteres';
+                    mensagemErro = 'Senha inválida, menos de 8 carácteres';
                   });
                 } else if (!emailValido(emailController.text)) {
                   setState(() {
-                  mensagemErro = 'E-mail inválido';
-                  });
-                } else if (!nomeValido(nomeController.text)) {
-                  setState(() {
-                  corNome = AppColors.error;
+                    mensagemErro = 'E-mail inválido';
                   });
                 } else {
                   await FirebaseFirestore.instance.collection('clientes').add({
@@ -151,7 +307,7 @@ class _CadastroPageState extends State<CadastroScreen> {
                     'senha_hash': senhaController.text,
                   });
                   setState(() {
-                  mensagemErro = 'Cadastrado com sucesso!';
+                    mensagemErro = 'Cadastrado com sucesso!';
                   });
                 }
               },
