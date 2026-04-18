@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 173, 17, 6),
       appBar: AppBar(
-        title: const Text('Login', style: const TextStyle(color: Colors.white)),
+        title: const Text('Login', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       ),
       body: Padding(
@@ -47,7 +47,7 @@ class LoginScreen extends StatelessWidget {
             const TextField(
               decoration: InputDecoration(
                 labelText: 'Email',
-                labelStyle: const TextStyle(
+                labelStyle: TextStyle(
                   color: Color.fromARGB(255, 255, 255, 255),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -67,7 +67,7 @@ class LoginScreen extends StatelessWidget {
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Senha',
-                labelStyle: const TextStyle(
+                labelStyle: TextStyle(
                   color: Color.fromARGB(255, 255, 255, 255),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -89,7 +89,7 @@ class LoginScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (context) => const PagamentoScreen()));
               },
-              child: const Text('Entrar', style: const TextStyle(color: Color.fromARGB(255, 255, 0, 0))),
+              child: Text('Entrar', style: TextStyle(color: Color.fromARGB(255, 255, 0, 0))),
                             style: ButtonStyle(
                 // 1. Cor padrão do botão (Fundo Vermelho)
                 backgroundColor: WidgetStateProperty.resolveWith<Color>((
@@ -110,7 +110,7 @@ class LoginScreen extends StatelessWidget {
                 );
               },
 
-              child: const Text("Cadastrar-se", style: const TextStyle(color: Color.fromARGB(255, 255, 0, 0))),
+              child: const Text("Cadastrar-se", style: TextStyle(color: Color.fromARGB(255, 255, 0, 0))),
               
               style: ButtonStyle(
                 // 1. Cor padrão do botão (Fundo Vermelho)

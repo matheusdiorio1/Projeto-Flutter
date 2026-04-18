@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:device_preview/device_preview.dart';
 
 import 'package:login_app/screens/login_screen.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/cadastro': (context) => const CadastroScreen(),
         '/home': (context) => const HomeScreen(),
+        'pagamento': (context) => const PagamentoScreen(),
       }
     );
   }

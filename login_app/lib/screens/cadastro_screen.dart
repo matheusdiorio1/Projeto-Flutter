@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:login_app/screens/login_screen.dart';
+import 'package:login_app/screens/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:login_app/theme/app_colors.dart';
@@ -30,6 +30,7 @@ enum EstadoCampo { neutro, valido, invalido }
 
 class _CadastroPageState extends State<CadastroScreen> {
   String mensagemErro = "";
+  bool isLoading = false;
 
   EstadoCampo nomeEstado = EstadoCampo.neutro;
   EstadoCampo emailEstado = EstadoCampo.neutro;
@@ -40,7 +41,8 @@ class _CadastroPageState extends State<CadastroScreen> {
 
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController telefoneController = TextEditingController();
-  final TextEditingController dataNascimentoController = TextEditingController();
+  final TextEditingController dataNascimentoController =
+      TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController senhaConfirmaController = TextEditingController();
@@ -53,7 +55,7 @@ class _CadastroPageState extends State<CadastroScreen> {
         return Colors.red;
       case EstadoCampo.neutro:
       default:
-        return Colors.grey;
+        return Colors.black;
     }
   }
 
@@ -159,7 +161,10 @@ class _CadastroPageState extends State<CadastroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Cadastro")),
+      appBar: AppBar(
+        title: const Text("Cadastro"),
+        backgroundColor: AppColors.appBar,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -297,43 +302,73 @@ class _CadastroPageState extends State<CadastroScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                if (confirmaDados()) {
-                  try {
-                    UserCredential userCredential = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                          email: emailController.text,
-                          password: senhaController.text,
-                        );
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      print('loading');
+                      if (confirmaDados()) {
+                        try {
+                          UserCredential userCredential = await FirebaseAuth
+                              .instance
+                              .createUserWithEmailAndPassword(
+                                email: emailController.text,
+                                password: senhaController.text,
+                              );
 
-                    String uid = userCredential.user!.uid;
+                          String uid = userCredential.user!.uid;
 
-                    await FirebaseFirestore.instance
-                        .collection('clientes')
-                        .doc(uid)
-                        .set({
-                          'nome': nomeController.text,
-                          'email': emailController.text,
-                          'dataNascimento': dataNascimentoController.text,
-                          'telefone': telefoneController.text,
-                        });
+                          await FirebaseFirestore.instance
+                              .collection('clientes')
+                              .doc(uid)
+                              .set({
+                                'nome': nomeController.text,
+                                'email': emailController.text,
+                                'dataNascimento': dataNascimentoController.text,
+                                'telefone': telefoneController.text,
+                              });
 
-                    print('Usuário cadastrado com sucesso!');
-                  } on FirebaseAuthException catch (e) {
-                    if (e.code == 'email-already-in-use') {
-                      print('E-mail já cadastrado');
-                    } else if (e.code == 'invalid-email') {
-                      print('E-mail inválido');
-                    } else if (e.code == 'weak-password') {
-                      print('Senha muito fraca');
-                    } else {
-                      print('Erro: ${e.code}');
-                    }
-                  }
-                } else {
-                  print('dados incoerentes');
-                }
-              },
+                          print('Usuário cadastrado com sucesso!');
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Sucesso'),
+                              content: const Text(
+                                'Cadastro realizado com sucesso!',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => HomeScreen()),
+                                    );
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'email-already-in-use') {
+                            print('E-mail já cadastrado');
+                          } else {
+                            print('Erro: ${e.code}');
+                          }
+                        } finally {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+                      } else {
+                        print('dados incoerentes');
+                      }
+                    },
               child: const Text('Criar Conta'),
             ),
           ],
