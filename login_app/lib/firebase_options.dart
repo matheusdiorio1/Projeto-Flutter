@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'cinemadb-app.firebasestorage.app',
     measurementId: 'G-2VCN105XKH',
   );
+
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:login_app/screens/login_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:login_app/theme/app_colors.dart';
 
 void main() {
@@ -39,8 +40,7 @@ class _CadastroPageState extends State<CadastroScreen> {
 
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController telefoneController = TextEditingController();
-  final TextEditingController dataNascimentoController =
-      TextEditingController();
+  final TextEditingController dataNascimentoController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController senhaConfirmaController = TextEditingController();
@@ -64,10 +64,10 @@ class _CadastroPageState extends State<CadastroScreen> {
   }
 
   bool telefoneValido(String telefone) {
-  final apenasNumeros = telefone.replaceAll(RegExp(r'[^0-9]'), '');
+    final apenasNumeros = telefone.replaceAll(RegExp(r'[^0-9]'), '');
 
-  return apenasNumeros.length == 10 || apenasNumeros.length == 11;
-}
+    return apenasNumeros.length == 10 || apenasNumeros.length == 11;
+  }
 
   bool emailValido(String email) {
     final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -103,7 +103,7 @@ class _CadastroPageState extends State<CadastroScreen> {
     });
   }
 
-   void validarTelefone() {
+  void validarTelefone() {
     setState(() {
       if (telefoneValido(telefoneController.text)) {
         telefoneEstado = EstadoCampo.valido;
@@ -141,6 +141,19 @@ class _CadastroPageState extends State<CadastroScreen> {
         confirmaSenhaEstado = EstadoCampo.invalido;
       }
     });
+  }
+
+  bool confirmaDados() {
+    if (nomeEstado == EstadoCampo.valido &&
+        emailEstado == EstadoCampo.valido &&
+        senhaEstado == EstadoCampo.valido &&
+        confirmaSenhaEstado == EstadoCampo.valido &&
+        telefoneEstado == EstadoCampo.valido &&
+        dataEstado == EstadoCampo.valido) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -285,30 +298,40 @@ class _CadastroPageState extends State<CadastroScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                mensagemErro = '';
-                print('Clicou no botão');
-                validarNome();
-                if (senhaController.text != senhaConfirmaController.text) {
-                  setState(() {
-                    mensagemErro = 'Senhas não coincidem';
-                  });
-                } else if (senhaController.text.length < 8) {
-                  setState(() {
-                    mensagemErro = 'Senha inválida, menos de 8 carácteres';
-                  });
-                } else if (!emailValido(emailController.text)) {
-                  setState(() {
-                    mensagemErro = 'E-mail inválido';
-                  });
+                if (confirmaDados()) {
+                  try {
+                    UserCredential userCredential = await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                          email: emailController.text,
+                          password: senhaController.text,
+                        );
+
+                    String uid = userCredential.user!.uid;
+
+                    await FirebaseFirestore.instance
+                        .collection('clientes')
+                        .doc(uid)
+                        .set({
+                          'nome': nomeController.text,
+                          'email': emailController.text,
+                          'dataNascimento': dataNascimentoController.text,
+                          'telefone': telefoneController.text,
+                        });
+
+                    print('Usuário cadastrado com sucesso!');
+                  } on FirebaseAuthException catch (e) {
+                    if (e.code == 'email-already-in-use') {
+                      print('E-mail já cadastrado');
+                    } else if (e.code == 'invalid-email') {
+                      print('E-mail inválido');
+                    } else if (e.code == 'weak-password') {
+                      print('Senha muito fraca');
+                    } else {
+                      print('Erro: ${e.code}');
+                    }
+                  }
                 } else {
-                  await FirebaseFirestore.instance.collection('clientes').add({
-                    'nome': nomeController.text,
-                    'email': emailController.text,
-                    'senha_hash': senhaController.text,
-                  });
-                  setState(() {
-                    mensagemErro = 'Cadastrado com sucesso!';
-                  });
+                  print('dados incoerentes');
                 }
               },
               child: const Text('Criar Conta'),
