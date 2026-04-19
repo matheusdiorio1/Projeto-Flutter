@@ -29,7 +29,14 @@ class CadastroScreen extends StatefulWidget {
 enum EstadoCampo { neutro, valido, invalido }
 
 class _CadastroPageState extends State<CadastroScreen> {
-  String mensagemErro = "";
+  String mensagemCadastro = '';
+  String? erroNome;
+  String? erroTelefone;
+  String? erroDataNascimento;
+  String? erroEmail;
+  String? erroSenha;
+  String? erroConfirmaSenha;
+
   bool isLoading = false;
 
   EstadoCampo nomeEstado = EstadoCampo.neutro;
@@ -54,7 +61,6 @@ class _CadastroPageState extends State<CadastroScreen> {
       case EstadoCampo.invalido:
         return Colors.red;
       case EstadoCampo.neutro:
-      default:
         return Colors.black;
     }
   }
@@ -84,8 +90,10 @@ class _CadastroPageState extends State<CadastroScreen> {
     setState(() {
       if (nomeValido(nomeController.text)) {
         nomeEstado = EstadoCampo.valido;
+        erroNome = null;
       } else {
         nomeEstado = EstadoCampo.invalido;
+        erroNome = 'Nome Inválido';
       }
     });
   }
@@ -97,11 +105,13 @@ class _CadastroPageState extends State<CadastroScreen> {
       // não pode ser no futuro
       if (data.isAfter(hoje)) {
         dataEstado = EstadoCampo.invalido;
+        erroDataNascimento = 'Data no futuro';
         return;
       }
 
       // se chegou aqui, é válida
       dataEstado = EstadoCampo.valido;
+      erroDataNascimento = null;
     });
   }
 
@@ -109,8 +119,10 @@ class _CadastroPageState extends State<CadastroScreen> {
     setState(() {
       if (telefoneValido(telefoneController.text)) {
         telefoneEstado = EstadoCampo.valido;
+        erroTelefone = null;
       } else {
         telefoneEstado = EstadoCampo.invalido;
+        erroTelefone = 'Número Inválido';
       }
     });
   }
@@ -119,8 +131,10 @@ class _CadastroPageState extends State<CadastroScreen> {
     setState(() {
       if (emailValido(emailController.text)) {
         emailEstado = EstadoCampo.valido;
+        erroEmail = null;
       } else {
         emailEstado = EstadoCampo.invalido;
+        erroEmail = 'Email Inválido';
       }
     });
   }
@@ -129,8 +143,10 @@ class _CadastroPageState extends State<CadastroScreen> {
     setState(() {
       if (senhaController.text.length >= 8) {
         senhaEstado = EstadoCampo.valido;
+        erroSenha = null;
       } else {
         senhaEstado = EstadoCampo.invalido;
+        erroSenha = 'Senha muito curta';
       }
     });
   }
@@ -139,8 +155,10 @@ class _CadastroPageState extends State<CadastroScreen> {
     setState(() {
       if (senhaController.text == senhaConfirmaController.text) {
         confirmaSenhaEstado = EstadoCampo.valido;
+        erroConfirmaSenha = null;
       } else {
         confirmaSenhaEstado = EstadoCampo.invalido;
+        erroConfirmaSenha = 'Senhas não coincidem';
       }
     });
   }
@@ -179,11 +197,22 @@ class _CadastroPageState extends State<CadastroScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              mensagemCadastro,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.green,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 20),
+
             TextField(
               controller: nomeController,
               onChanged: (_) => validarNome(),
               decoration: InputDecoration(
                 labelText: 'Nome Completo',
+                errorText: erroNome,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: corDoCampo(nomeEstado)),
                 ),
@@ -192,6 +221,12 @@ class _CadastroPageState extends State<CadastroScreen> {
                     color: corDoCampo(nomeEstado),
                     width: 2,
                   ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
                 ),
               ),
             ),
@@ -212,6 +247,7 @@ class _CadastroPageState extends State<CadastroScreen> {
                   setState(() {
                     dataEstado = EstadoCampo.invalido;
                     dataNascimentoController.clear();
+                    erroDataNascimento = 'Data Vazia';
                   });
                   return;
                 }
@@ -224,6 +260,7 @@ class _CadastroPageState extends State<CadastroScreen> {
               },
               decoration: InputDecoration(
                 labelText: 'Data de Nascimento',
+                errorText: erroDataNascimento,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: corDoCampo(dataEstado)),
                 ),
@@ -232,6 +269,12 @@ class _CadastroPageState extends State<CadastroScreen> {
                     color: corDoCampo(dataEstado),
                     width: 2,
                   ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
                 ),
               ),
             ),
@@ -242,6 +285,7 @@ class _CadastroPageState extends State<CadastroScreen> {
               onChanged: (_) => validarTelefone(),
               decoration: InputDecoration(
                 labelText: 'Telefone (DDD e Número)',
+                errorText: erroTelefone,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: corDoCampo(telefoneEstado)),
                 ),
@@ -250,6 +294,12 @@ class _CadastroPageState extends State<CadastroScreen> {
                     color: corDoCampo(telefoneEstado),
                     width: 2,
                   ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
                 ),
               ),
             ),
@@ -260,6 +310,7 @@ class _CadastroPageState extends State<CadastroScreen> {
               onChanged: (_) => validarEmail(),
               decoration: InputDecoration(
                 labelText: 'Email',
+                errorText: erroEmail,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: corDoCampo(emailEstado)),
                 ),
@@ -269,15 +320,22 @@ class _CadastroPageState extends State<CadastroScreen> {
                     width: 2,
                   ),
                 ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             TextField(
               obscureText: true,
               controller: senhaController,
-              onChanged: (_) => validarSenha(),
+              onChanged: (_) => {validarSenha(), validarConfirmaSenha()},
               decoration: InputDecoration(
                 labelText: 'Senha',
+                errorText: erroSenha,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: corDoCampo(senhaEstado)),
                 ),
@@ -286,6 +344,12 @@ class _CadastroPageState extends State<CadastroScreen> {
                     color: corDoCampo(senhaEstado),
                     width: 2,
                   ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
                 ),
               ),
             ),
@@ -296,6 +360,7 @@ class _CadastroPageState extends State<CadastroScreen> {
               onChanged: (_) => validarConfirmaSenha(),
               decoration: InputDecoration(
                 labelText: 'Confirmar Senha',
+                errorText: erroConfirmaSenha,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: corDoCampo(confirmaSenhaEstado),
@@ -307,6 +372,12 @@ class _CadastroPageState extends State<CadastroScreen> {
                     width: 2,
                   ),
                 ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.error),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -316,8 +387,8 @@ class _CadastroPageState extends State<CadastroScreen> {
                   : () async {
                       setState(() {
                         isLoading = true;
+                        mensagemCadastro = 'Cadastrando...';
                       });
-                      print('loading');
                       if (confirmaDados()) {
                         try {
                           UserCredential userCredential = await FirebaseAuth
@@ -339,7 +410,8 @@ class _CadastroPageState extends State<CadastroScreen> {
                                 'telefone': telefoneController.text,
                               });
 
-                          print('Usuário cadastrado com sucesso!');
+                          if (!mounted) return;
+
                           showDialog(
                             context: context,
                             barrierDismissible: false,
@@ -367,20 +439,22 @@ class _CadastroPageState extends State<CadastroScreen> {
                           );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'email-already-in-use') {
-                            print('E-mail já cadastrado');
+                            setState(() {
+                              erroEmail = 'Email já cadastrado.';
+                            });
                           } else {
                             print('Erro: ${e.code}');
                           }
                         } finally {
-                          print('cancel loading');
                           setState(() {
                             isLoading = false;
+                            mensagemCadastro = '';
                           });
                         }
                       } else {
-                        print('cancel loading 2');
                         setState(() {
                           isLoading = false;
+                          mensagemCadastro = '';
                         });
                       }
                     },

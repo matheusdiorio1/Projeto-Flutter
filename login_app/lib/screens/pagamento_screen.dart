@@ -30,7 +30,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
               height: 220,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9), // Fundo quase branco
+                color: Colors.white.withValues(alpha: 0.9), // Fundo quase branco
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.black, width: 2),
               ),
@@ -58,7 +58,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
             Container(
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
