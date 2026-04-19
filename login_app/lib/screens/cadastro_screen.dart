@@ -162,7 +162,16 @@ class _CadastroPageState extends State<CadastroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cadastro"),
+        title: const Text(
+          "Cadastro",
+          style: TextStyle(
+            fontSize: 22,
+            letterSpacing: 1.5,
+            color: Colors.black,
+          ),
+        ),
+        centerTitle: true,
+
         backgroundColor: AppColors.appBar,
       ),
       body: Padding(
@@ -346,7 +355,9 @@ class _CadastroPageState extends State<CadastroScreen> {
 
                                     Navigator.pushReplacement(
                                       context,
-                                      MaterialPageRoute(builder: (_) => HomeScreen()),
+                                      MaterialPageRoute(
+                                        builder: (_) => HomeScreen(),
+                                      ),
                                     );
                                   },
                                   child: const Text('OK'),
@@ -361,15 +372,22 @@ class _CadastroPageState extends State<CadastroScreen> {
                             print('Erro: ${e.code}');
                           }
                         } finally {
+                          print('cancel loading');
                           setState(() {
                             isLoading = false;
                           });
                         }
                       } else {
-                        print('dados incoerentes');
+                        print('cancel loading 2');
+                        setState(() {
+                          isLoading = false;
+                        });
                       }
                     },
-              child: const Text('Criar Conta'),
+              child: const Text(
+                'Criar Conta',
+                style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+              ),
             ),
           ],
         ),
